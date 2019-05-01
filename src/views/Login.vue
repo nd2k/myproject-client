@@ -6,10 +6,12 @@
       </div>
 
       <div class="content">
-        <form method="POST" action="#">
+        <form>
           <div class="field">
             <div class="control has-icons-left">
               <input
+                @blur="$v.user.email.$touch()"
+                v-model="user.email"
                 class="input"
                 id="email"
                 name="email"
@@ -18,6 +20,14 @@
                 required
                 autofocus
               >
+              <div v-if="$v.user.email.$error">
+                <span v-if="!$v.user.email.required">
+                  <b-alert show variant="danger" fade>Email address is mandatory</b-alert>
+                </span>
+                <span v-if="!$v.user.email.email">
+                  <b-alert show variant="danger" fade>Your email address is not valid</b-alert>
+                </span>
+              </div>
               <span class="icon is-small is-left">
                 <font-awesome-icon icon="envelope"/>
               </span>
@@ -27,6 +37,8 @@
           <div class="field">
             <div class="control has-icons-left">
               <input
+                @blur="$v.user.password.$touch()"
+                v-model="user.password"
                 class="input"
                 id="password"
                 name="password"
@@ -35,6 +47,14 @@
                 required
                 autofocus
               >
+              <div v-if="$v.user.password.$error">
+                <span v-if="!$v.user.password.required">
+                  <b-alert show variant="danger" fade>This field is mandatory</b-alert>
+                </span>
+                <span v-if="!$v.user.password.minLength">
+                  <b-alert show variant="danger" fade>This field requires at least 8 characters</b-alert>
+                </span>
+              </div>
               <span class="icon is-small is-left">
                 <font-awesome-icon icon="unlock"/>
               </span>
@@ -51,7 +71,7 @@
             <a class="btn btn-link level-right" href="#">Forgot Password?</a>
           </div>
 
-          <button type="submit" class="btn btn-primary">Sing In</button>
+          <button :disabled="isUserInvalid" @click.prevent="login" class="btn btn-primary">Log In</button>
         </form>
       </div>
     </div>
@@ -59,7 +79,47 @@
 </template>
 
 <script>
-export default {}
+import { required, email, minLength } from "vuelidate/lib/validators"
+
+export default {
+  data() {
+    return {
+      user: {
+        email: null,
+        password: null
+      }
+    }
+  },
+  validations: {
+    user: {
+      email: {
+        required,
+        email
+      },
+      password: {
+        required,
+        minLengt: minLength(8)
+      }
+    }
+  },
+  computed: {
+    isUserInvalid() {
+      return this.$v.$invalid
+    }
+  },
+  methods: {
+    login() {
+      console.log(this.$v)
+      console.log(this.user)
+      this.$v.$touch()
+      this.$store.dispatch("user/login", this.user)
+        .then(() => {
+          this.$router.push("/home")
+        })
+        .catch(e => console.log(e))
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -158,6 +218,14 @@ $grey-lighter: hsl(0, 0%, 86%);
         box-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
       }
 
+      &:disabled {
+        border: 1px solid #999999;
+        background-color: #cccccc;
+        color: #666666;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
       &:active {
         transform: translateY(1px);
       }
@@ -201,5 +269,11 @@ select:focus,
 textarea:focus,
 button:focus {
   outline: none;
+}
+
+.alert {
+  padding: 0.3rem !important;
+  font-size: 10px !important;
+  margin-top: -0.8rem !important;
 }
 </style>

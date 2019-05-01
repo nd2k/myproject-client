@@ -4,7 +4,9 @@
       <AppSpinner/>
     </div>-->
     <AppNavbar/>
-    <router-view/>
+    <v-content id="content">
+      <router-view/>
+    </v-content>
   </v-app>
 </template>
 
@@ -15,10 +17,6 @@ export default {
   data() {
     return {
     }
-  },
-  created() {
-    console.log(this.$store)
-    console.log(this.$store.state.drawer)
   }
 }
 </script>
@@ -35,5 +33,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+#content {
+  padding: 0 !important;
 }
 </style>

@@ -18,7 +18,7 @@ import AppFooter from "./components/shared/AppFooter.vue"
 import AppSpinner from "./components/shared/AppSpinner.vue"
 
 import axios from "axios"
-axios.defaults.baseURL = "http://localhost:3000/"
+axios.defaults.baseURL = "http://localhost:3000"
 
 Vue.use(vuelidate)
 Vue.use(BootstrapVue)

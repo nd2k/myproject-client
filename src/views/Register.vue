@@ -1,5 +1,5 @@
 <template>
-  <div id="register">
+  <div id="register" class="py-2">
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
@@ -9,10 +9,11 @@
             </div>
 
             <div class="content">
-              <form method="POST" action="#">
+              <form>
                 <div class="field">
                   <div class="control has-icons-left">
                     <input
+                      @blur="$v.newUser.email.$touch()"
                       v-model="newUser.email"
                       class="input"
                       id="email"
@@ -39,6 +40,69 @@
                 <div class="field">
                   <div class="control has-icons-left">
                     <input
+                      @blur="$v.newUser.firstname.$touch()"
+                      v-model="newUser.firstname"
+                      class="input"
+                      id="firstname"
+                      name="firstname"
+                      type="firstname"
+                      placeholder="Your first name"
+                      required
+                      autofocus
+                    >
+                    <div v-if="$v.newUser.firstname.$error">
+                      <span v-if="!$v.newUser.firstname.required">
+                        <b-alert show variant="danger" fade>This field is mandatory</b-alert>
+                      </span>
+                      <span v-if="!$v.newUser.firstname.minLength">
+                        <b-alert
+                          show
+                          variant="danger"
+                          fade
+                        >This field requires at least 2 characters</b-alert>
+                      </span>
+                    </div>
+                    <span class="icon is-small is-left">
+                      <font-awesome-icon icon="user"/>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input
+                      @blur="$v.newUser.lastname.$touch()"
+                      v-model="newUser.lastname"
+                      class="input"
+                      id="lastname"
+                      name="lastname"
+                      type="lastname"
+                      placeholder="Your last name"
+                      required
+                      autofocus
+                    >
+                    <div v-if="$v.newUser.lastname.$error">
+                      <span v-if="!$v.newUser.lastname.required">
+                        <b-alert show variant="danger" fade>This field is mandatory</b-alert>
+                      </span>
+                      <span v-if="!$v.newUser.lastname.minLength">
+                        <b-alert
+                          show
+                          variant="danger"
+                          fade
+                        >This field requires at least 2 characters</b-alert>
+                      </span>
+                    </div>
+                    <span class="icon is-small is-left">
+                      <font-awesome-icon icon="user"/>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input
+                      @blur="$v.newUser.password.$touch()"
                       v-model="newUser.password"
                       class="input"
                       id="password"
@@ -52,6 +116,13 @@
                       <span v-if="!$v.newUser.password.required">
                         <b-alert show variant="danger" fade>This field is mandatory</b-alert>
                       </span>
+                      <span v-if="!$v.newUser.password.minLength">
+                        <b-alert
+                          show
+                          variant="danger"
+                          fade
+                        >This field requires at least 8 characters</b-alert>
+                      </span>
                     </div>
                     <span class="icon is-small is-left">
                       <font-awesome-icon icon="unlock"/>
@@ -62,6 +133,7 @@
                 <div class="field">
                   <div class="control has-icons-left">
                     <input
+                      @blur="$v.newUser.confirmedPassword.$touch()"
                       v-model="newUser.confirmedPassword"
                       class="input"
                       id="confirmedPassowrd"
@@ -75,6 +147,9 @@
                       <span v-if="!$v.newUser.confirmedPassword.required">
                         <b-alert show variant="danger" fade>This field is mandatory</b-alert>
                       </span>
+                      <span v-if="!$v.newUser.confirmedPassword.sameAsPassword">
+                        <b-alert show variant="danger" fade>Invalid password confirmation</b-alert>
+                      </span>
                     </div>
                     <span class="icon is-small is-left">
                       <font-awesome-icon icon="unlock"/>
@@ -85,6 +160,7 @@
                 <div class="field">
                   <div class="control has-icons-left">
                     <input
+                      @blur="$v.newUser.avatar.$touch()"
                       v-model="newUser.avatar"
                       class="input"
                       id="avatar"
@@ -94,6 +170,11 @@
                       required
                       autofocus
                     >
+                    <div v-if="$v.newUser.avatar.$error">
+                      <span v-if="!$v.newUser.avatar.url">
+                        <b-alert show variant="danger" fade>URL format is not valid</b-alert>
+                      </span>
+                    </div>
                     <span class="icon is-small is-left">
                       <font-awesome-icon icon="user"/>
                     </span>
@@ -110,7 +191,11 @@
                   <a class="btn btn-link level-right" href="#">Forgot Password?</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary" @click.prevent="register">Sing In</button>
+                <button
+                  :disabled="isUserInvalid"
+                  @click.prevent="register"
+                  class="btn btn-primary"
+                >Sign In</button>
               </form>
             </div>
           </div>
@@ -121,13 +206,15 @@
 </template>
 
 <script>
-import { required, email } from "vuelidate/lib/validators"
+import { required, email, minLength, sameAs, url } from "vuelidate/lib/validators"
 
 export default {
   data() {
     return {
       newUser: {
         email: null,
+        firstname: null,
+        lastname: null,
         password: null,
         confirmedPassword: null,
         avatar: null
@@ -140,20 +227,42 @@ export default {
         required,
         email
       },
+      firstname: {
+        required,
+        minLengt: minLength(2)
+      },
+      lastname: {
+        required,
+        minLengt: minLength(2)
+      },
       password: {
-        required
+        required,
+        minLengt: minLength(8)
       },
       confirmedPassword: {
-        required
+        required,
+        sameAsPassword: sameAs("password")
       },
-      avatar: {}
+      avatar: {
+        url
+      }
+    }
+  },
+  computed: {
+    isUserInvalid() {
+      return this.$v.$invalid
     }
   },
   methods: {
     register() {
       console.log(this.$v)
-      this.$v.newUser.$touch()
+      console.log(this.newUser)
+      this.$v.$touch()
       this.$store.dispatch("user/register", this.newUser)
+        .then(() => {
+          this.$router.push("/login")
+        })
+        .catch(e => console.log(e))
     }
   }
 }
@@ -171,7 +280,6 @@ $grey-lighter: hsl(0, 0%, 86%);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 75vh;
   background: #f7f7f7;
 
   .register-card {
@@ -199,6 +307,8 @@ $grey-lighter: hsl(0, 0%, 86%);
     }
 
     #email,
+    #firstname,
+    #lastname,
     #password,
     #confirmedPassowrd,
     #avatar {
@@ -257,6 +367,14 @@ $grey-lighter: hsl(0, 0%, 86%);
         box-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
       }
 
+      &:disabled {
+        border: 1px solid #999999;
+        background-color: #cccccc;
+        color: #666666;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
       &:active {
         transform: translateY(1px);
       }
@@ -307,4 +425,23 @@ button:focus {
   font-size: 10px !important;
   margin-top: -0.8rem !important;
 }
+
+// Animations
+// .fade-enter {
+//   opacity: 0;
+// }
+
+// .fade-enter-active {
+//   transition: opacity 2s;
+//   opacity: 1;
+// }
+
+// .fade-leave {
+//   opacity: 1;
+// }
+
+// .fade-leave-active {
+//   transition: opacity 2s;
+//   opacity: 0;
+// }
 </style>
