@@ -112,9 +112,10 @@ export default {
       console.log(this.$v)
       console.log(this.user)
       this.$v.$touch()
-      this.$store.dispatch("user/login", this.user)
+      this.$store
+        .dispatch("user/login", this.user)
         .then(() => {
-          this.$router.push("/home")
+          this.$router.push("/")
         })
         .catch(e => console.log(e))
     }
