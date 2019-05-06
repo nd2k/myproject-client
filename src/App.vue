@@ -4,7 +4,7 @@
       <AppSpinner/>
     </div>-->
     <AppNavbar/>
-    <v-content id="content">
+    <v-content>
       <router-view/>
     </v-content>
   </v-app>
@@ -33,9 +33,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#content {
-  padding: 0 !important;
 }
 </style>

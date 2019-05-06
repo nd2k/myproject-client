@@ -3,7 +3,18 @@ import "./plugins/vuetify"
 import App from "./App.vue"
 // Import necessary package for fontAwesome icons
 import { library } from "@fortawesome/fontawesome-svg-core"
-import { faEnvelope, faUnlock, faUser, faHome, faQuestion } from "@fortawesome/free-solid-svg-icons"
+import {
+  faEnvelope,
+  faUnlock,
+  faUser,
+  faHome,
+  faQuestion,
+  faCogs,
+  faChartPie,
+  faSignOutAlt,
+  faUsers,
+  faTasks
+} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 // Import for validations form
 import vuelidate from "vuelidate"
@@ -24,7 +35,18 @@ Vue.use(vuelidate)
 Vue.use(BootstrapVue)
 
 // Add the needed icons
-library.add(faEnvelope, faUnlock, faUser, faHome, faQuestion)
+library.add(
+  faEnvelope,
+  faUnlock,
+  faUser,
+  faHome,
+  faQuestion,
+  faCogs,
+  faChartPie,
+  faSignOutAlt,
+  faUsers,
+  faTasks
+)
 
 // Vue using the fontAwesome icons
 Vue.component("font-awesome-icon", FontAwesomeIcon)
